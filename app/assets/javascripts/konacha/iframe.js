@@ -5,6 +5,13 @@ window.Konacha = {
   }
 };
 
+// Push errors to parent iframe.
+window.onerror = function() {
+  if (parent.onerror) {
+    return parent.onerror.apply(parent, arguments);
+  }
+};
+
 window.Mocha = Object.create(parent.Mocha);
 window.mocha = Object.create(parent.mocha);
 
@@ -25,10 +32,7 @@ mocha.ui = function (name) {
 
 mocha.ui('bdd');
 
-// Disable leak detection by default. It doesn't seem to be reliable
-// with Konacha's iframe setup.
-mocha.ignoreLeaks();
-
+// Show only the current iframe.
 mocha.suite.beforeAll(function () {
   var contexts = parent.document.getElementsByClassName("test-context");
   for (var i = 0; i < contexts.length; ++i) {

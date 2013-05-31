@@ -3,25 +3,12 @@ require 'spec_helper'
 describe Konacha::Runner do
   before do
     Konacha.mode = :runner
-    STDOUT.stub(:puts)
   end
+
   describe ".new" do
-
-    before do
-      class TestFormatter
-        def initialize(io)
-        end
-      end
-      ENV['FORMAT'] = 'Konacha::Formatter,TestFormatter'
-    end
-
-    after do
-      Object.send(:remove_const, :TestFormatter)
-      ENV.delete('FORMAT')
-    end
-
-    it "initializes a reporter with formatters named by the FORMAT environment variable" do
-      Konacha::Reporter.should_receive(:new).with(instance_of(Konacha::Formatter), instance_of(TestFormatter))
+    it 'creates a reporter with formatters returned by Konacha.formatters' do
+      Konacha.should_receive(:formatters) { :formatters }
+      Konacha::Reporter.should_receive(:new).with(:formatters)
       described_class.new
     end
 
@@ -31,10 +18,19 @@ describe Konacha::Runner do
     end
   end
 
+  describe ".start" do
+    it 'sets the Capybara.server_port' do
+      Capybara.should_receive(:server_port=).with(Konacha.runner_port)
+      Konacha::Runner.any_instance.stub(:run)
+      Konacha::Runner.start
+    end
+  end
+
   shared_examples_for "Konacha::Runner" do |driver|
     before do
       Konacha.configure do |config|
         config.driver = driver
+        config.formatters = [Konacha::Formatter.new(StringIO.new)]
       end
     end
 
@@ -93,6 +89,20 @@ describe Konacha::Runner do
            'error'           => {'message' => 'this one errors out', 'name' => 'Error'}}}
       end
 
+      let(:error_async) do
+        {'event' => 'fail',
+         'type'  => 'test',
+         'data'  => {
+           'title'           => 'errors asynchronously',
+           'fullTitle'       => 'failure errors asynchronously',
+           'parentFullTitle' => 'failure',
+           'status'          => 'failed',
+           'path'            => 'failing_spec.js',
+           # Accept anything for 'message' since async errors have URLs, which
+           # vary on every run, and line #, which may change in Chai releases.
+           'error'           => {'message' => anything(), 'name' => 'Error'}}}
+      end
+
       let(:pass) do
         {'event' => 'pass',
          'type'  => 'test',
@@ -126,6 +136,7 @@ describe Konacha::Runner do
         subject.reporter.should_receive(:process_mocha_event).with(test)
         subject.reporter.should_receive(:process_mocha_event).with(failure)
         subject.reporter.should_receive(:process_mocha_event).with(error)
+        subject.reporter.should_receive(:process_mocha_event).with(error_async)
         subject.reporter.should_receive(:process_mocha_event).with(pass)
         subject.reporter.should_receive(:process_mocha_event).with(pending)
         subject.reporter.should_receive(:process_mocha_event).with(end_event)

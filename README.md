@@ -3,21 +3,19 @@
 [![Build Status](https://secure.travis-ci.org/jfirebaugh/konacha.png?branch=master)](http://travis-ci.org/jfirebaugh/konacha)
 [![Dependency Status](https://gemnasium.com/jfirebaugh/konacha.png)](https://gemnasium.com/jfirebaugh/konacha)
 
-Konacha is a Rails engine that allows you to test your JavaScript with the
+Konacha ([koh-NAH-cha], a type of green tea) is a Rails engine that allows you to test your JavaScript with the
 [Mocha](http://visionmedia.github.com/mocha/) test framework and [chai](http://chaijs.com/)
 assertion library.
 
-[![Konacha][2]][1]
+[![Konacha in action][2]][1]
 
-  [1]: http://en.wikipedia.org/wiki/Konacha
-  [2]: https://github.com/jfirebaugh/konacha/raw/master/vendor/images/konacha.jpg
+  [1]: http://www.youtube.com/watch?v=heK78M6Ql9Q
+  [2]: https://github.com/jfirebaugh/konacha/raw/master/images/youtube.png
 
 It is similar to [Jasmine](https://github.com/pivotal/jasmine-gem) and
 [Evergreen](https://github.com/jnicklas/evergreen), but does not attempt to be framework
 agnostic. By sticking with Rails, Konacha can take full advantage of features such as
 the asset pipeline and engines.
-
-Photo credit: [FCartegnie](http://commons.wikimedia.org/wiki/File:Konacha.jpg), CC-BY-SA.
 
 ## Installation
 
@@ -132,7 +130,7 @@ To automatically trigger reruns when files change, try [guard-konacha](https://g
 ## Spec Helper
 
 Since Konacha integrates with the asset pipeline, using setup helpers in your specs is
-easy. Just create a `spec_helper.js` or `spec_helper.js.coffee` file in `specs/javascripts`
+easy. Just create a `spec_helper.js` or `spec_helper.js.coffee` file in `spec/javascripts`
 and require it in your tests:
 
 ```javascript
@@ -226,6 +224,12 @@ Sprocket's built in support for JavaScript template (`.jst`) files. Add a `spec/
 directory, place template files there (using any JS template language supported by Sprockets),
 require them in your spec or spec_helper, and render them into the `<body>`.
 
+Note that if you want to use EJS as in the following example, you need to add that gem to your Gemfile:
+
+```ruby
+gem "ejs"
+```
+
 For example, in `spec/javascripts/templates/hello.jst.ejs`:
 
 ```html
@@ -251,42 +255,10 @@ describe("templating", function() {
 });
 ```
 
-## Upgrading from Konacha 1.x
+## Upgrading from Konacha 2.x
 
-### Iframe
-
-As of Konacha 2.0, each test file is run inside an isolated iframe. For
-compatibility with Konacha 1.x, the iframe's `<body>` element will have
-`id="konacha"` set on it.
-
-Previously, all test files would run in the same environment. Thus, if only
-one test file pulled in an external library, all tests would be able to use
-it. Now test files are run in isolation. If you encounter an undefined
-JavaScript module in your test, you may be missing an explicit `//= require`
-call somewhere.
-
-### Options
-
-In Konacha 1.x you would set `Konacha.mochaOptions` in `konacha_config.js`:
-
-```javascript
-// Old syntax
-Konacha.mochaOptions.ignoreLeaks = true;
-```
-
-The `konacha_config.js` file is no longer used by Konacha 2.0. Instead, call
-Mocha's own methods in [`spec_helper.js`](#spec-helper):
-
-```javascript
-// New syntax
-mocha.ignoreLeaks();
-```
-
-### Global `mocha`
-
-Konacha 2.0 ships with an upgraded Mocha. Some objects that were previously
-available on the global `mocha` object might now be located on `Mocha`. If you
-get an error message to this effect, adjust your code accordingly.
+The only backward-incompatible change in Konacha 3.0 is that Ruby 1.8.7 is
+no longer supported. Please upgrade to 1.9.3 or 2.0.
 
 ## Contributing
 

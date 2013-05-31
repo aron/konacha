@@ -1,5 +1,30 @@
 # master
 
+# 3.0.0
+
+* Update mocha (1.10.0)
+* Fix reporting of errors in asynchronous tests (#136)
+* Add a Konacha.config option to set formatters (#137)
+* Test against latest version of Poltergeist
+* Ruby 1.8.7 is no longer supported
+
+# 2.7.0
+
+* Fix semantics of pending event for RSpec reporters (#131, #132)
+* Update chai (1.6.0)
+
+# 2.6.0
+
+* Update mocha (1.9.0) and chai (1.5.0)
+
+# 2.5.1
+
+* Fix several Rails 4 beta compatibility issues.
+
+# 2.5.0
+
+* Made port of the runner configurable
+
 # 2.4.0
 
 * Support requesting files with periods in the name
