@@ -1,6 +1,10 @@
 Konacha = {
   getEvents: function() {
-    return JSON.stringify(Konacha.events || []);
+    // Capybara seems to have an issue with passing quoted strings within
+    // json keys back to the ruby process. Here we work around the issue by
+    // fixing the issue first. I've not had time to check if this is fixed
+    // in a later version of Capybara.
+    return JSON.stringify(Konacha.events || []).replace(/\\"/g, '\\\\"');
   }
 };
 
