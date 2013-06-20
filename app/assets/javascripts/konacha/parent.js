@@ -30,7 +30,9 @@ window.onload = function () {
       }
     }
 
-    document.body.removeChild(status);
+    if (status.parentNode) {
+      document.body.removeChild(status);
+    }
     mocha.run();
   }
 
